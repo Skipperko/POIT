@@ -1,6 +1,7 @@
 from threading import Lock
 from flask import Flask, render_template, session, request, jsonify, url_for
 from flask_socketio import SocketIO, emit, disconnect
+from arduino import *
 import math
 import time
 import json
@@ -18,39 +19,48 @@ thread_lock = Lock()
 
 
 def background_thread(args):
+    temp_flag = False
     count = 0
     dataList = []
     btnV=""
     while True:
+
+        data = get_data()
+        print(data)
         if args:
           A = dict(args).get('A')
           btnV = dict(args).get('btn_value')
         else:
           A = 1
-        #print A
         if btnV == "start":
             flag = 1
+            temp_flag = False
         elif btnV == "stop":
             flag = 0
+            temp_flag = False
+        elif data[2] < 75:
+            print("Distance : ", data[2])
+            flag = 1
+            temp_flag = not temp_flag
         else:
             flag = 0
-        if flag == 1:
+        if flag == 1 or temp_flag:
             print(args)
             socketio.sleep(2)
             count += 1
-            prem = math.sin(time.time())
             dataDict = {
                 "t": time.time(),
                 "x": count,
-                "y": float(A) * prem}
+                "y": data[0]}
             dataList.append(dataDict)
             json_object = json.dumps(dataDict, indent=4)
             if len(dataList) > 0:
                 # print(str(dataList))
                 print(str(dataList).replace("'", "\""))
-            socketio.emit('my_response',
-                      {'data': float(A)*math.sin(time.time()), 'count': count},
+            socketio.emit('my_data',
+                      {'humidity': data[0], 'count': count, "temperature": data[1]},
                       namespace='/test')
+            data.clear()
 
 
 
@@ -62,7 +72,7 @@ def index():
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
-    session['A'] = message['value']
+    #session['A'] = message['value']
     emit('my_response',
          {'data': message['value'], 'count': session['receive_count']})
 
@@ -71,18 +81,21 @@ def test_message(message):
 def disconnect_request():
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-         {'data': 'Disconnected!', 'count': session['receive_count']})
+         {'data': 'Disconnected!'})
     disconnect()
 
+@socketio.on('initialize', namespace='/test')
+def initialize():
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=background_thread, args=session._get_current_object())
+    emit('my_response', {'data': 'Initialized!', 'count': session['receive_count']})
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
-    global thread
-    if dict(session._get_current_object()).get('button_value') == "open":
-        with thread_lock:
-            if thread is None:
-                thread = socketio.start_background_task(target=background_thread, args=session._get_current_object())
-        emit('my_response', {'data': 'Connected', 'count': 0})
+    emit('my_response', {'data': 'Connected!', 'count': 0})
 
 @socketio.on('click_event', namespace='/test')
 def db_message(message):

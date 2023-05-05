@@ -3,8 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>jQuery UI Tabs - Open on mouseover</title>
-    <!--     http://jqueryui.com/tabs/#mouseover -->
-    <link rel="stylesheet" href="static/jquery-ui.min.css" />
     <script src="static/jquery-3.2.1.min.js"></script>
     <script
       type="text/javascript"
@@ -17,14 +15,10 @@
     <script src="static/jquery-ui.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-      $(function () {
-        $("#tabs").tabs({
-          event: "mouseover",
-        });
-      });
       $(document).ready(function () {
         var x = new Array();
         var y = new Array();
+        var z = new Array();
         var trace;
         var layout;
         namespace = "/test";
@@ -38,20 +32,35 @@
         );
 
         socket.on("connect", function () {
-          socket.emit("my_event", { data: "I'm connected!", value: 1 });
+          socket.emit("my_event", { data: "I'm connected!" });
         });
 
-        socket.on("my_response", function (msg) {
+        socket.on("my_data", function (msg) {
           console.log(msg.data);
           $("#log")
-            .append("Received #" + msg.count + ": " + msg.data + "<br>")
+            .append(
+              "Data #" +
+                msg.count +
+                " Humidity: " +
+                msg.humidity +
+                " Temperature: " +
+                msg.temperature +
+                "<br>"
+            )
             .html();
           x.push(parseFloat(msg.count));
-          y.push(parseFloat(msg.data));
-          console.log(msg.data);
+          y.push(parseFloat(msg.humidity));
+          z.push(parseFloat(msg.temperature));
+          console.log(msg.humidity);
           trace = {
             x: x,
             y: y,
+            name: "Humidity",
+          };
+          second_trace = {
+            x: x,
+            y: z,
+            name: "Temperature",
           };
           layout = {
             title: "Data",
@@ -66,13 +75,13 @@
           console.log(trace);
 
           var traces = new Array();
-          traces.push(trace);
+          traces.push(trace, second_trace);
           Plotly.newPlot($("#plotdiv")[0], traces, layout);
-          console.log(parseFloat(msg.data));
+          console.log(parseFloat(msg.humidity));
           var data = [
             {
               domain: { x: [0, 1], y: [0, 1] },
-              value: parseFloat(msg.data),
+              value: parseFloat(msg.humidity),
               title: { text: "Speed" },
               type: "indicator",
               mode: "gauge+number",
@@ -83,6 +92,13 @@
 
           layout = { width: 600, height: 400 };
           Plotly.newPlot("myDiv", data, layout);
+        });
+
+        socket.on("my_response", function (msg) {
+          console.log(msg.data);
+          $("#log")
+            .append(msg.data + "<br>")
+            .html();
         });
 
         $("form#emit").submit(function (event) {
@@ -103,16 +119,16 @@
           socket.emit("click_event", { value: $("#start").val() });
           return false;
         });
+        $("#open").click(function (event) {
+          console.log($("#open").val());
+          socket.emit("initialize");
+          return false;
+        });
       });
     </script>
   </head>
   <body>
     <div id="tabs">
-      <ul>
-        <li><a href="#tabs-1">Example tab #1</a></li>
-        <li><a href="#tabs-2">Example tab #2</a></li>
-        <li><a href="#tabs-3">Example tab #3</a></li>
-      </ul>
       <div id="tabs-1">
         <h1>Flask-SocketIO Test</h1>
         <h2>Send:</h2>
@@ -131,7 +147,8 @@
         <h2>Receive:</h2>
         <div id="log"></div>
         <button id="start" type="submit" value="start">Start</button>
-        <button id="buttonVal" type="submit" value="stop">stop</button>
+        <button id="open" type="submit" value="open">Open</button>
+        <button id="buttonVal" type="submit" value="stop">Stop</button>
       </div>
       <div id="tabs-2">
         <div id="plotdiv" style="width: 600px; height: 250px"></div>
