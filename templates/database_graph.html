@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final assignment</title>
+  </head>
+  <script src="../static/jquery-3.2.1.min.js"></script>
+  <script
+    type="text/javascript"
+    src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"
+  ></script>
+  <script
+    type="text/javascript"
+    src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"
+  ></script>
+  <script src="../static/jquery-ui.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    $(document).ready(() => {
+      var data = {{Data}}
+      var trace;
+      var layout;
+
+      trace = {
+        x: data[0],
+        y: data[1],
+        name: "Humidity",
+      };
+      second_trace = {
+        x: data[0],
+        y: data[2],
+        name: "Temperature",
+      };
+      layout = {
+        title: "Data",
+        xaxis: {
+          title: "x",
+        },
+        yaxis: {
+          title: "y",
+        },
+      };
+      let traces = [trace, second_trace];
+      console.log(traces);
+      Plotly.newPlot($("#plotdiv")[0], traces, layout);
+    });
+  </script>
+  <body>
+    <p>{{Data}}</p>
+    <div id="tabs-2">
+      <div id="plotdiv" style="width: 600px; height: 250px"></div>
+    </div>
+  </body>
+</html>
