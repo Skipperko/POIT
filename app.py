@@ -2,6 +2,7 @@ from threading import Lock
 from flask import Flask, render_template, session, request, jsonify, url_for
 from flask_socketio import SocketIO, emit, disconnect
 from arduino import *
+from file_write import *
 import math
 import time
 import json
@@ -24,7 +25,6 @@ def background_thread(args):
     dataList = []
     btnV=""
     while True:
-
         data = get_data()
         print(data)
         if args:
@@ -35,31 +35,27 @@ def background_thread(args):
         if btnV == "start":
             flag = 1
             temp_flag = False
+        elif data[2] < 100:
+            temp_flag = True
         elif btnV == "stop":
             flag = 0
             temp_flag = False
-        elif data[2] < 75:
-            print("Distance : ", data[2])
-            flag = 1
-            temp_flag = not temp_flag
         else:
             flag = 0
+            temp_flag = False
         if flag == 1 or temp_flag:
-            print(args)
             socketio.sleep(2)
             count += 1
             dataDict = {
                 "t": time.time(),
                 "x": count,
-                "y": data[0]}
+                "y": data[0] * float(A)}
             dataList.append(dataDict)
             json_object = json.dumps(dataDict, indent=4)
-            if len(dataList) > 0:
-                # print(str(dataList))
-                print(str(dataList).replace("'", "\""))
             socketio.emit('my_data',
-                      {'humidity': data[0], 'count': count, "temperature": data[1]},
+                      {'humidity': data[0] * float(A), 'count': count, "temperature": data[1] * float(A)},
                       namespace='/test')
+            write_to_file(data)
             data.clear()
 
 
@@ -72,9 +68,9 @@ def index():
 @socketio.on('my_event', namespace='/test')
 def test_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
-    #session['A'] = message['value']
+    session['A'] = message['value']
     emit('my_response',
-         {'data': message['value'], 'count': session['receive_count']})
+         {'data': "Amplitude is: " + session['A']})
 
 
 @socketio.on('disconnect_request', namespace='/test')
@@ -99,7 +95,12 @@ def test_connect():
 
 @socketio.on('click_event', namespace='/test')
 def db_message(message):
+    if message['value'] == "start":
+        emit('my_response', {'data': 'Started!'})
+    else:
+        emit('my_response', {'data': 'Stopped!'})
     session['btn_value'] = message['value']
+    
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():

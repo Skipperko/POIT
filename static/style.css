@@ -1,0 +1,228 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#tabs-1 {
+  z-index: 3;
+  margin-top: 0;
+  border-radius: 52px;
+  width: 20%;
+  height: 12%;
+  padding: 40px;
+  position: absolute;
+  top: 12%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  float: left;
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(85, 84, 84);
+  text-align: center;
+}
+
+#tabs-1 h2 {
+  padding-bottom: 20px;
+}
+
+#tabs-2 {
+  z-index: 3;
+  margin-top: 0;
+  border-radius: 52px;
+  width: 35%;
+  padding: 40px;
+  position: absolute;
+  top: 20%;
+  left: 65%;
+  transform: translate(-50%, -50%);
+  float: left;
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(85, 84, 84);
+  text-align: center;
+}
+
+#tabs-4 {
+  margin-top: 0;
+  border-radius: 52px;
+  width: 20%;
+  height: 40%;
+  padding: 40px;
+  position: absolute;
+  top: 63%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  float: left;
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(85, 84, 84);
+  text-align: center;
+  overflow-y: auto;
+}
+
+#start {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 7%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 30%;
+  left: 7%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 75px rgb(0, 0, 0);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#buttonVal {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 7%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 30%;
+  left: 15.5%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 75px rgb(0, 0, 0);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#open {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 7%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 30%;
+  left: 24%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 75px rgb(0, 0, 0);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#send {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 20%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 70%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 35px rgb(0, 0, 0, 0.6);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#emit_value {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 40%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 70%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 35px rgb(0, 0, 0, 0.6);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#disc {
+  margin-top: 0;
+  outline: none;
+  border: none;
+  border-radius: 52px;
+  width: 7%;
+  min-height: 5%;
+  padding: 10px;
+  position: absolute;
+  top: 95%;
+  left: 15%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(0, 0, 0);
+  text-align: center;
+  font-size: 20px;
+  z-index: 4;
+  cursor: pointer;
+}
+
+#container_humidity {
+  z-index: 3;
+  margin-top: 0;
+  border-radius: 52px;
+  width: 23%;
+  height: 40%;
+  padding: 20px;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  float: left;
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(85, 84, 84);
+  text-align: center;
+}
+
+#container_temperature {
+  z-index: 3;
+  margin-top: 0;
+  border-radius: 52px;
+  width: 23%;
+  height: 40%;
+  padding: 20px;
+  position: absolute;
+  top: 70%;
+  left: 85%;
+  transform: translate(-50%, -50%);
+  float: left;
+  background: #ffffff;
+  box-shadow: 0 0 100px rgb(85, 84, 84);
+  text-align: center;
+}
+
+#buttonVal:hover,
+#open:hover,
+#start:hover,
+#disc:hover,
+#send:hover,
+#emit_value:hover {
+  box-shadow: 0 0 75px rgb(255, 99, 132, 0.5);
+}

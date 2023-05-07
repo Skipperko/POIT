@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>jQuery UI Tabs - Open on mouseover</title>
+    <link rel="stylesheet" href="./static/style.css">
+    <title>Final assignment</title>
     <script src="static/jquery-3.2.1.min.js"></script>
     <script
       type="text/javascript"
@@ -15,10 +16,11 @@
     <script src="static/jquery-ui.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-      $(document).ready(function () {
+      $(document).ready(() => {
         var x = new Array();
         var y = new Array();
         var z = new Array();
+        let amplitude = 1;
         var trace;
         var layout;
         namespace = "/test";
@@ -31,12 +33,11 @@
             namespace
         );
 
-        socket.on("connect", function () {
+        socket.on("connect", () => {
           socket.emit("my_event", { data: "I'm connected!" });
         });
 
-        socket.on("my_data", function (msg) {
-          console.log(msg.data);
+        socket.on("my_data", (msg) => {
           $("#log")
             .append(
               "Data #" +
@@ -51,7 +52,6 @@
           x.push(parseFloat(msg.count));
           y.push(parseFloat(msg.humidity));
           z.push(parseFloat(msg.temperature));
-          console.log(msg.humidity);
           trace = {
             x: x,
             y: y,
@@ -69,7 +69,6 @@
             },
             yaxis: {
               title: "y",
-              //range: [-1,1]
             },
           };
           console.log(trace);
@@ -77,49 +76,64 @@
           var traces = new Array();
           traces.push(trace, second_trace);
           Plotly.newPlot($("#plotdiv")[0], traces, layout);
-          console.log(parseFloat(msg.humidity));
-          var data = [
+          var data_humidity = [
             {
               domain: { x: [0, 1], y: [0, 1] },
               value: parseFloat(msg.humidity),
-              title: { text: "Speed" },
+              title: { text: "Humidity" },
               type: "indicator",
               mode: "gauge+number",
-              delta: { reference: 400 },
-              gauge: { axis: { range: [-1, 1] } },
+              delta: { reference: 400},
+              gauge: { axis: { range: [0, 100 * amplitude] }, bar: {color: "rgb(255, 99, 132, 0.5)"} },
             },
           ];
 
-          layout = { width: 600, height: 400 };
-          Plotly.newPlot("myDiv", data, layout);
+          layout = { width: 400, height: 400 };
+          Plotly.newPlot("humidity", data_humidity, layout);
+
+          var data_temperature = [
+            {
+              domain: { x: [0, 1], y: [0, 1] },
+              value: parseFloat(msg.temperature),
+              title: { text: "Temperature" },
+              type: "indicator",
+              mode: "gauge+number",
+              delta: { reference: 400 },
+              gauge: { axis: { range: [0, 50 * amplitude] }, bar: {color: "rgb(255, 99, 132, 0.5)"} },
+            },
+          ];
+
+          layout = { width: 400, height: 400 };
+          Plotly.newPlot("temperature", data_temperature, layout);
         });
 
-        socket.on("my_response", function (msg) {
+        socket.on("my_response", (msg) => {
           console.log(msg.data);
           $("#log")
             .append(msg.data + "<br>")
             .html();
         });
 
-        $("form#emit").submit(function (event) {
+        $("form#emit").submit((event) => {
+          amplitude = $("#emit_value").val();
           socket.emit("my_event", { value: $("#emit_value").val() });
           return false;
         });
-        $("form#disconnect").submit(function (event) {
+        $("form#disconnect").submit((event) => {
           socket.emit("disconnect_request");
           return false;
         });
-        $("#buttonVal").click(function (event) {
+        $("#buttonVal").click((event) => {
           console.log($("#buttonVal").val());
           socket.emit("click_event", { value: $("#buttonVal").val() });
           return false;
         });
-        $("#start").click(function (event) {
+        $("#start").click((event) => {
           console.log($("#start").val());
           socket.emit("click_event", { value: $("#start").val() });
           return false;
         });
-        $("#open").click(function (event) {
+        $("#open").click((event) => {
           console.log($("#open").val());
           socket.emit("initialize");
           return false;
@@ -130,8 +144,7 @@
   <body>
     <div id="tabs">
       <div id="tabs-1">
-        <h1>Flask-SocketIO Test</h1>
-        <h2>Send:</h2>
+        <h2>Amplitude</h2>
         <form id="emit" method="POST" action="#">
           <input
             type="text"
@@ -139,23 +152,29 @@
             id="emit_value"
             placeholder="Amplituda"
           />
-          <input type="submit" value="Send" />
+          <input type="submit" value="Send" id="send"/>
         </form>
-        <form id="disconnect" method="POST" action="#">
-          <input type="submit" value="Disconnect" />
-        </form>
+      </div>
+      <form id="disconnect" method="POST" action="#">
+        <input type="submit" value="Disconnect" id="disc"/>
+      </form>
+      <button id="start" type="submit" value="start">Start</button>
+      <button id="open" type="submit" value="open">Open</button>
+      <button id="buttonVal" type="submit" value="stop">Stop</button>
+      <div id="tabs-4">
         <h2>Receive:</h2>
-        <div id="log"></div>
-        <button id="start" type="submit" value="start">Start</button>
-        <button id="open" type="submit" value="open">Open</button>
-        <button id="buttonVal" type="submit" value="stop">Stop</button>
+        <div id="container_log">
+          <div id="log"></div>
+        </div>
       </div>
       <div id="tabs-2">
         <div id="plotdiv" style="width: 600px; height: 250px"></div>
       </div>
-      <div id="tabs-3">
-        <div id="myDiv"></div>
+      <div id="container_humidity">
+        <div id="humidity"></div>
       </div>
+      <div id="container_temperature">
+        <div id="temperature"></div>
     </div>
   </body>
 </html>

@@ -13,9 +13,12 @@ def get_data():
     list_values = decoded_values.split('x')
     
     for item in list_values:
-        data.append(float(item))
+        if item[0] == ".":
+            fixed = item[1:]
+            data.append(float(fixed))
+        else:
+            data.append(float(item))
         
-    #print('Collected data: ', data)
     arduino.close()
 
     return data    
