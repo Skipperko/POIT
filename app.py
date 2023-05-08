@@ -80,7 +80,6 @@ def background_thread(args):
                 pointer.execute("INSERT INTO DATA (value) VALUES(%s)", (data_str))
                 db.commit()
                 dataList.clear()
-                count = 0
 
 @app.route('/')
 def index():
